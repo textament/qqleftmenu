@@ -30,10 +30,13 @@ public class ListViewAdapter extends BaseAdapter {
     private List<TestInfos> list = null;
 
     private ViewHolder holder = null;
+    private ViewHolderSingle holdersingle = null;
 
     private LayoutInflater mInflater;
 
     private boolean isLoading = true;
+
+    private boolean change = true;
 
 
     LinearLayout linearLayout;
@@ -52,11 +55,17 @@ public class ListViewAdapter extends BaseAdapter {
     @Override
     public int getCount() {
         int count =0;
-        if(list.size()%2==0){
-            count = list.size()/2;
-        }else{
-            count = list.size()/2+1;
+
+        if(change){
+            count = list.size();
+        }else {
+            if(list.size()%2==0){
+                count = list.size()/2;
+            }else{
+                count = list.size()/2+1;
+            }
         }
+
 
         return count;
     }
@@ -78,97 +87,87 @@ public class ListViewAdapter extends BaseAdapter {
 
         if (convertView == null) {
 
-            holder = new ViewHolder();
 
-            view = mInflater.inflate(R.layout.item_listview, null);
-            holder.outLy = (LinearLayout)view.findViewById(R.id.lin1);
-            holder.imageView = (ImageView)view.findViewById(R.id.img);
-            holder.title = (TextView)view.findViewById(R.id.title);
-            holder.info = (TextView)view.findViewById(R.id.info);
-            holder.linearLayoutRight  =(LinearLayout)view.findViewById(R.id.id_lyRight);
-            holder.imageViewRight = (ImageView)view.findViewById(R.id.imgRight);
-            holder.titleRight = (TextView)view.findViewById(R.id.titleRight);
-            holder.infoRight = (TextView)view.findViewById(R.id.infoRight);
-            view.setTag(holder);
-            Log.e("1","1");
+
+            if(change){
+                holdersingle = new ViewHolderSingle();
+
+
+                view = mInflater.inflate(R.layout.item_listview_single, null);
+
+                holdersingle.imageViewSingle = (ImageView)view.findViewById(R.id.img_single);
+                holdersingle.titleSingle = (TextView)view.findViewById(R.id.title_single);
+                holdersingle.infoSingle = (TextView)view.findViewById(R.id.info_single);
+
+                view.setTag(holdersingle);
+
+
+            }else{
+                holder = new ViewHolder();
+                view = mInflater.inflate(R.layout.item_listview, null);
+                holder.outLy = (LinearLayout)view.findViewById(R.id.lin1);
+                holder.imageView = (ImageView)view.findViewById(R.id.img);
+                holder.title = (TextView)view.findViewById(R.id.title);
+                holder.info = (TextView)view.findViewById(R.id.info);
+                holder.linearLayoutRight  =(LinearLayout)view.findViewById(R.id.id_lyRight);
+                holder.imageViewRight = (ImageView)view.findViewById(R.id.imgRight);
+                holder.titleRight = (TextView)view.findViewById(R.id.titleRight);
+                holder.infoRight = (TextView)view.findViewById(R.id.infoRight);
+                view.setTag(holder);
+            }
+
+
             isLoading = true;
         } else {
             view = convertView;
-            holder = (ViewHolder) view.getTag();
+            if(change){
+                holdersingle = (ViewHolderSingle)view.getTag();
+            }else{
+
+                holder = (ViewHolder) view.getTag();
+            }
+
            // holder.outLy.removeAllViews();
-            Log.e("2","2");
             isLoading = false;
         }
-        Log.i("position",position+"");
         // set data
 
-        int leftP = 0;
-        int rightP = 0;
-
-        if(position==0){
-            leftP =0;
-
-        }else {
-            leftP = position*2;
-        }
-
-        rightP = leftP + 1;
-        Log.i("rightP",rightP+"");
-        TestInfos t = list.get(leftP);
-        updateData(t);
-        if(rightP<list.size()){
-            TestInfos tNext = list.get(rightP);
-            updateDataRight(tNext);
-            holder.linearLayoutRight.setVisibility(View.VISIBLE);
+        if(change){
+            TestInfos t = list.get(position);
+            updateDataSingle(t);
         }else{
-            holder.linearLayoutRight.setVisibility(View.GONE);
+            int leftP = 0;
+            int rightP = 0;
+
+            if(position==0){
+                leftP =0;
+
+            }else {
+                leftP = position*2;
+            }
+
+            rightP = leftP + 1;
+            TestInfos t = list.get(leftP);
+            updateData(t);
+            if(rightP<list.size()){
+                TestInfos tNext = list.get(rightP);
+                updateDataRight(tNext);
+                holder.linearLayoutRight.setVisibility(View.VISIBLE);
+            }else{
+                holder.linearLayoutRight.setVisibility(View.GONE);
+            }
         }
 
-
-
-
-
-//                if(isLoading){
-//                    linearLayout  = new LinearLayout(context);
-//                    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT,1);
-//                    linearLayout.setLayoutParams(layoutParams);
-//                    linearLayout.setOrientation(LinearLayout.HORIZONTAL);
-//
-//                    img  = new ImageView(context);
-//                    LinearLayout.LayoutParams lp2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT ,LinearLayout.LayoutParams.WRAP_CONTENT);
-//                    img.setBackgroundResource(R.drawable.ic_launcher);
-//                    img.setLayoutParams(lp2);
-//
-//                    linearLayoutIn = new LinearLayout(context);
-//                    LinearLayout.LayoutParams layoutParamsIn = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-//                    linearLayoutIn.setLayoutParams(layoutParamsIn);
-//                    linearLayoutIn.setOrientation(LinearLayout.VERTICAL);
-//
-//                    tv = new TextView(context);
-//                    LinearLayout.LayoutParams layoutParamsTv = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-//                    tv.setLayoutParams(layoutParamsTv);
-//                    tv.setTextSize(16);
-//                    tv.setText(tNext.getTitle());
-//
-//                    info = new TextView(context);
-//                    LinearLayout.LayoutParams layoutParamsInfo = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-//                    info.setLayoutParams(layoutParamsInfo);
-//                    info.setTextSize(16);
-//                    info.setText(tNext.getInfo());
-//
-//                    linearLayoutIn.addView(tv);
-//                    linearLayoutIn.addView(info);
-//
-//                    linearLayout.addView(img);
-//                    linearLayout.addView(linearLayoutIn);
-//                    holder.outLy.addView(linearLayout);
-//                }else{
-//
-//                    tv.setText(tNext.getTitle());
-//                    info.setText(tNext.getInfo());
-//                }
 
         return view;
+    }
+
+    public void updateData(){
+        notifyDataSetChanged();;
+    }
+
+    public void setIsChanage (boolean isChanage){
+        this.change = isChanage;
     }
 
     private void updateDataRight(TestInfos t){
@@ -186,6 +185,14 @@ public class ListViewAdapter extends BaseAdapter {
 
     }
 
+    private void updateDataSingle(TestInfos t){
+        holdersingle.imageViewSingle.setImageResource(R.drawable.ic_launcher);
+        holdersingle.titleSingle.setText(t.getTitle());
+        holdersingle.infoSingle.setText(t.getInfo());
+
+    }
+
+
     static class ViewHolder {
         ImageView imageView;
         TextView title;
@@ -195,6 +202,16 @@ public class ListViewAdapter extends BaseAdapter {
         ImageView imageViewRight;
         TextView titleRight;
         TextView infoRight;
+        //ImageView pic;
+
+    }
+
+
+    static class ViewHolderSingle {
+        ImageView imageViewSingle;
+        TextView titleSingle;
+        TextView infoSingle;
+
         //ImageView pic;
 
     }
